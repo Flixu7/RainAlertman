@@ -1,0 +1,33 @@
+name: Daily Rain Message
+
+on:
+  schedule:
+    - cron: '0 4 * * *'  # UTC, więc 6:00 w Polsce (UTC+2)
+  workflow_dispatch:
+
+jobs:
+  weather-alert:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+
+    - name: Install dependencies
+      run: |
+        pip install requests python-dotenv twilio
+
+    - name: Run weather alert script
+      env:
+        ACCOUNT_SID: ${{ secrets.ACCOUNT_SID }}
+        AUTH_TOKEN: ${{ secrets.AUTH_TOKEN }}
+        FROM: ${{ secrets.FROM }}
+        TO: ${{ secrets.TO }}
+        API_KEY: ${{ secrets.API_KEY }}
+        CITY: ${{ secrets.CITY }}
+      run: python main.py
